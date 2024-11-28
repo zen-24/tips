@@ -48,8 +48,12 @@ def index():
         </form>
     ''')
 
+import os
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  # Renderが提供するポートを取得
+    app.run(host='0.0.0.0', port=port, debug=True)
+
 w = input("学部を選んで下さい(文学部、教育学部、法学部、経済学部、理学部、医学部、歯学部、薬学部、工学部、農学部、獣医学部、水産学部、総合教育部): ")
 x = input("留学の目的を選んで下さい(交換留学 or 語学留学): ")
 y = input("留学予定の国を教えて下さい(アメリカ、フランス、中国、オーストラリア、スイス): ")
