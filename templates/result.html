@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-    <title>留学支援結果</title>
+    <meta charset="UTF-8">
+    <title>奨学金情報結果</title>
 </head>
 <body>
-    <h1>留学支援結果</h1>
-    <p>奨学金情報: {{ scholarship_info }}</p>
-    <p>予想される費用: {{ cost }}</p>
-    <p>住居に関するアドバイス: {{ accommodation }}</p>
-    <p>詳細情報: <a href="{{ scholarship_link }}" target="_blank">こちら</a></p>
+    <h1>奨学金情報</h1>
+    <p>{{ scholarship_info }}</p>
+    <p><a href="{{ scholarship_link }}">詳細はこちら</a></p>
+    <a href="/">戻る</a>
 </body>
 </html>
