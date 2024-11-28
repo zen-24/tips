@@ -2,16 +2,74 @@ from flask import Flask, request, render_template_string
 
 app = Flask(__name__)
 
+# 奨学金情報のデータベース
+scholarships = {
+    "文学部": {
+        "交換留学": {
+            "スイス": {
+                "半年": {
+                    "給付型": {
+                        "併給可能": {"info": "大林財団奨学金(JASSO等のみ併給可能)、北海道大学フロンティア基金新渡戸カレッジ(海外留学) 奨学金(原則)、北海道大学・ニトリ海外留学奨学金(原則)", "link": "https://discord.gg/8hFuaqkP"},
+                        "併給不可": {"info": "住友化学グローバルリーダー育成奨学金(条件あり)、JEES・石橋財団奨学金、北海道大学フロンティア基金クラーク海外留学助成奨学金", "link": "https://discord.gg/8hFuaqkP"}
+                    },
+                    "貸与型": {"info": "", "link": "https://discord.gg/8hFuaqkP"}
+                },
+                "１年": {
+                    "給付型": {
+                        "併給可能": {"info": "大林財団奨学金(JASSO等のみ併給可能)、北海道大学フロンティア基金新渡戸カレッジ(海外留学) 奨学金(原則)、北海道大学・ニトリ海外留学奨学金(原則)", "link": "https://discord.gg/8hFuaqkP"},
+                        "併給不可": {"info": "スイス政府奨学金、JEES・石橋財団奨学金、北海道大学フロンティア基金クラーク海外留学助成奨学金", "link": "https://discord.gg/8hFuaqkP"}
+                    },
+                    "貸与型": {"info": "a2文学部貸与", "link": "https://discord.gg/8hFuaqkP"}
+                }
+            }
+        }
+    }
+}
+
+# 奨学金情報を取得する関数
+def get_scholarship_info(w, x, y, z, s, a):
+    try:
+        scholarship_info = scholarships[w][x][y][z][s][a]
+    except KeyError:
+        scholarship_info = {"info": "指定された条件に合致する奨学金情報がありません。", "link": "https://discord.gg/8hFuaqkP"}
+    return scholarship_info['info'], scholarship_info['link']
+
+# 費用と住居の情報を取得する関数
+def cost_and_accommodation(country, period):
+    if country == "スイス":
+        if period == "1ヶ月以内":
+            cost = "月額約150,000円〜200,000円"
+            accommodation = "学生寮やシェアハウスが一般的です。"
+        elif period == "半年":
+            cost = "月額約280,000円〜300,000円"
+            accommodation = "学生寮やシェアハウスが一般的です。"
+        elif period == "１年":
+            cost = "月額約280,000円〜300,000円"
+            accommodation = "学生寮やシェアハウスが一般的です。"
+    elif country == "アメリカ":
+        if period == "1ヶ月以内":
+            cost = "月額約100,000円〜150,000円"
+            accommodation = "ホームステイや学生寮が一般的です。"
+        elif period == "半年":
+            cost = "月額約120,000円〜170,000円"
+            accommodation = "学生寮やシェアハウスが一般的です。"
+        elif period == "１年":
+            cost = "月額約110,000円〜160,000円"
+            accommodation = "学生寮やシェアハウスが一般的です。"
+    return cost, accommodation
+
+# ルート設定
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        w = request.form['faculty']
-        x = request.form['purpose']
-        y = request.form['country']
-        z = request.form['period']
-        s = request.form['scholarship_type']
-        a = request.form['combination']
+        w = request.form.get('faculty')
+        x = request.form.get('purpose')
+        y = request.form.get('country')
+        z = request.form.get('period')
+        s = request.form.get('scholarship_type')
+        a = request.form.get('combination')
         
+        # 関数を呼び出して情報を取得
         scholarship_info, scholarship_link = get_scholarship_info(w, x, y, z, s, a)
         cost, accommodation = cost_and_accommodation(y, z)
         
@@ -50,78 +108,7 @@ def index():
 
 import os
 
+# アプリの実行
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))  # Renderが提供するポートを取得
+    port = int(os.environ.get("PORT", 5000))  # Render環境用のポート設定
     app.run(host='0.0.0.0', port=port, debug=True)
-
-w = input("学部を選んで下さい(文学部、教育学部、法学部、経済学部、理学部、医学部、歯学部、薬学部、工学部、農学部、獣医学部、水産学部、総合教育部): ")
-x = input("留学の目的を選んで下さい(交換留学 or 語学留学): ")
-y = input("留学予定の国を教えて下さい(アメリカ、フランス、中国、オーストラリア、スイス): ")
-z = input("期間を選んで下さい(１ヶ月以内、半年、１年): ")
-s = input("奨学金の種類を選んで下さい(給付型 or 貸与型): ")
-a = input("併給の有無を選んで下さい(併給可能 or 併給不可): ")
-
-scholarships = {
-    "文学部": {
-        "交換留学": {
-            "スイス": {
-                "半年": {
-                    "給付型": {
-                        "併給可能": {"info": "大林財団奨学金(JASSO等のみ併給可能)、北海道大学フロンティア基金新渡戸カレッジ(海外留学) 奨学金(原則)、北海道大学・ニトリ海外留学奨学金(原則)", "link": "https://discord.gg/8hFuaqkP"},
-                        "併給不可": {"info": "住友化学グローバルリーダー育成奨学金(条件あり)、JEES・石橋財団奨学金、北海道大学フロンティア基金クラーク海外留学助成奨学金", "link": "https://discord.gg/8hFuaqkP"}
-                    },
-                    "貸与型": {"info": "", "link": "https://discord.gg/8hFuaqkP"}
-                },
-                "１年": {
-                    "給付型": {
-                        "併給可能": {"info": "大林財団奨学金(JASSO等のみ併給可能)、北海道大学フロンティア基金新渡戸カレッジ(海外留学) 奨学金(原則)、北海道大学・ニトリ海外留学奨学金(原則)", "link": "https://discord.gg/8hFuaqkP"},
-                        "併給不可": {"info": "スイス政府奨学金、JEES・石橋財団奨学金、北海道大学フロンティア基金クラーク海外留学助成奨学金", "link": "https://discord.gg/8hFuaqkP"}
-                    },
-                    "貸与型": {"info": "a2文学部貸与", "link": "https://discord.gg/8hFuaqkP"}
-                }
-            }
-        }
-    }
-}
-
-def get_scholarship_info(w, x, y, z, s, a):
-    try:
-        scholarship_info = scholarships[w][x][y][z][s][a]
-    except KeyError:
-        scholarship_info = {"info": "指定された条件に合致する奨学金情報がありません。", "link": "https://discord.gg/8hFuaqkP"}
-    
-    return scholarship_info['info'], scholarship_info['link']
-
-scholarship_info, scholarship_link = get_scholarship_info(w, x, y, z, s, a)
-
-def cost_and_accommodation(country, period):
-    if country == "スイス":
-        if period == "1ヶ月以内":
-            cost = "月額約150,000円〜200,000円"
-            accommodation = "学生寮やシェアハウスが一般的です。"
-        elif period == "半年":
-            cost = "月額約280,000円〜300,000円"
-            accommodation = "学生寮やシェアハウスが一般的です。"
-        elif period == "１年":
-            cost = "月額約280,000円〜300,000円"
-            accommodation = "学生寮やシェアハウスが一般的です。"
-    elif country == "アメリカ":
-        if period == "1ヶ月以内":
-            cost = "月額約100,000円〜150,000円"
-            accommodation = "ホームステイや学生寮が一般的です。"
-        elif period == "半年":
-            cost = "月額約120,000円〜170,000円"
-            accommodation = "学生寮やシェアハウスが一般的です。"
-        elif period == "１年":
-            cost = "月額約110,000円〜160,000円"
-            accommodation = "学生寮やシェアハウスが一般的です。"
-    return cost, accommodation
-
-cost, accommodation = cost_and_accommodation(y, z)
-
-print("")
-print(f"奨学金情報: {scholarship_info}")
-print(f"予想される費用: {cost}")
-print(f"住居に関するアドバイス: {accommodation}")
-print(f"生活に関する詳細情報はこちらのリンクから: {scholarship_link}")
-print("学外奨学金についてはこちらのリンクから: https://ryugaku.jasso.go.jp/scholarship.html")
