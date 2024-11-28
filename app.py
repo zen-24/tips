@@ -56,7 +56,13 @@ def cost_and_accommodation(country, period):
         elif period == "１年":
             cost = "月額約110,000円〜160,000円"
             accommodation = "学生寮やシェアハウスが一般的です。"
+    else:
+        # Default case if no conditions match
+        cost = "情報がありません。"
+        accommodation = "該当する住居情報が見つかりません。"
+    
     return cost, accommodation
+
 
 # ルート設定
 @app.route('/', methods=['GET', 'POST'])
